@@ -84,10 +84,6 @@ export const Scene = () => {
   }, []);
 
   useFrame((_, delta) => {
-    if (meshRef.current) {
-      // meshRef.current.rotation.y += 0.5 * delta;
-    }
-
     if (controlsRef.current) {
       const targetAzimuth = gyroRef.current.available
         ? gyroRef.current.azimuth
@@ -110,7 +106,7 @@ export const Scene = () => {
 
   return (
     <>
-      <PerspectiveCamera makeDefault fov={20} position={[0, 0, 2]} />
+      <PerspectiveCamera makeDefault fov={30} position={[0, 0, 2]} />
 
       <CameraControls
         ref={controlsRef}
@@ -126,15 +122,15 @@ export const Scene = () => {
           two: CameraControlsImpl.ACTION.NONE,
           three: CameraControlsImpl.ACTION.NONE,
         }}
-        minPolarAngle={Math.PI / 2 - 0.1}
-        maxPolarAngle={Math.PI / 2 + 0.1}
+        minPolarAngle={Math.PI / 2 - 0.15}
+        maxPolarAngle={Math.PI / 2 + 0.15}
         minAzimuthAngle={-0.1}
         maxAzimuthAngle={0.1}
       />
 
       <SparkRenderer args={[sparkRendererArgs]}>
         {/* This particular splat mesh is upside down */}
-        <group rotation={[-Math.PI, -0.05, 0]}>
+        <group rotation={[-Math.PI, 0, 0]}>
           <SplatMesh ref={meshRef} args={[splatMeshArgs]} />
         </group>
       </SparkRenderer>
