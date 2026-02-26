@@ -7,30 +7,29 @@ import {
 } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import type { SplatMesh as SparkSplatMesh } from "@sparkjsdev/spark";
-import { useEffect, useMemo, useRef } from "react";
-import {
-  DEVICE_ORIENTATION_PERMISSION_GRANTED_EVENT,
-  getDeviceOrientationPermissionState,
-} from "./deviceOrientationPermissions";
+import { useMemo, useRef } from "react";
 import { SparkRenderer } from "./spark-renderer";
 import { SplatMesh } from "./splat-mesh";
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, value));
+type SceneProps = {
+  mouse: {
+    x: number;
+    y: number;
+  };
+  gyro?: {
+    available: boolean;
+    azimuth: number;
+    polar: number;
+  };
+};
 
 /**
  * Separate `Scene` component to be used in the React Three Fiber `Canvas` component so that we can use React Three Fiber hooks like `useThree`
  */
-export const Scene = () => {
+export function Scene({ mouse, gyro }: SceneProps) {
   const renderer = useThree((state) => state.gl);
-  const pointer = useThree((state) => state.pointer);
   const meshRef = useRef<SparkSplatMesh>(null);
   const controlsRef = useRef<CameraControlsImpl>(null);
-  const gyroRef = useRef({
-    available: false,
-    azimuth: 0,
-    polar: Math.PI / 2,
-  });
 
   // Memoize the elements inside the `<SparkRenderer />` `args` prop so that we don't re-create the `<SparkRenderer />` on every render
   const sparkRendererArgs = useMemo(() => {
@@ -47,50 +46,12 @@ export const Scene = () => {
     [],
   );
 
-  useEffect(() => {
-    const handleOrientation = (event: DeviceOrientationEvent) => {
-      if (event.gamma == null || event.beta == null) {
-        return;
-      }
-
-      const normalizedX = clamp(event.gamma / 45, -1, 1);
-      const normalizedY = clamp(event.beta / 45, -1, 1);
-
-      gyroRef.current.available = true;
-      gyroRef.current.azimuth = normalizedX * 0.1;
-      gyroRef.current.polar = Math.PI / 2 + normalizedY * 0.1;
-    };
-
-    const startOrientationListener = () => {
-      window.addEventListener("deviceorientation", handleOrientation, true);
-    };
-
-    if (getDeviceOrientationPermissionState() === "required") {
-      window.addEventListener(
-        DEVICE_ORIENTATION_PERMISSION_GRANTED_EVENT,
-        startOrientationListener,
-      );
-    } else {
-      startOrientationListener();
-    }
-
-    return () => {
-      window.removeEventListener(
-        DEVICE_ORIENTATION_PERMISSION_GRANTED_EVENT,
-        startOrientationListener,
-      );
-      window.removeEventListener("deviceorientation", handleOrientation, true);
-    };
-  }, []);
-
   useFrame((_, delta) => {
     if (controlsRef.current) {
-      const targetAzimuth = gyroRef.current.available
-        ? gyroRef.current.azimuth
-        : pointer.x * 0.1;
-      const targetPolar = gyroRef.current.available
-        ? gyroRef.current.polar
-        : Math.PI / 2 - pointer.y * 0.1;
+      const targetAzimuth = gyro?.available ? gyro.azimuth : mouse.x * 0.1;
+      const targetPolar = gyro?.available
+        ? gyro.polar
+        : Math.PI / 2 - mouse.y * 0.1;
       const smoothing = 1 - Math.exp(-10 * delta);
 
       const nextAzimuth =
@@ -136,4 +97,4 @@ export const Scene = () => {
       </SparkRenderer>
     </>
   );
-};
+}
