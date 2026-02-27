@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const NAVIGATION_ITEMS = [
-  { label: "CV", href: "/cv" },
-  { label: "Posts", href: "/posts" },
-  { label: "Contact", href: "/contact" },
-  { label: "Projects", href: "/projects" },
+  { label: "CV", href: "#cv" },
+  { label: "Projects", href: "#projects" },
+  { label: "Contact", href: "#contact" },
+  { label: "Posts", href: "#posts" },
 ] as const;
 
 type StaggeredNavProps = {
