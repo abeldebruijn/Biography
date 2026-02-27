@@ -122,10 +122,17 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
   body {
     @apply bg-background text-foreground;
+    min-height: 100svh;
     width: 100dvw;
-    overflow-x: hidden;
   }
 }
 
