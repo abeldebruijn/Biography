@@ -1,0 +1,161 @@
+---
+title: 'Teaching Calculus with Lava: How We Built an AR Mountain Game for TU Delft'
+date: '2022-04-18'
+description: 'A project exploring augmented reality with a lava simulation.'
+isProject: true
+---
+
+> Education is swiftly shifting from printed materials to a digital setup. Universities worldwide began offering online courses in 1982, with Connected Education launching the first fully online master's program in 1985 (Withrow, 1997). In this transition, institutions are developing digital tools to supplement lectures, usable in both physical and online formats.
+>
+> _What if students could hold a volcano in their hands and watch lava carve paths through it; all to learn directional derivatives?_
+
+That was the challenge handed to a five-person student team at TU Delft's CSE2000 Software Project course in the spring of 2022. The result was **AR LavaFlow**: a mobile web application that scans a hand-drawn contour map, builds a 3D mountain model from it in real time, and then simulates lava flowing down the steepest gradients all through augmented reality.
+
+---
+
+## The Problem Worth Solving
+
+Directional derivatives are notoriously hard to teach. The topic appears in nearly every bachelor's program at TU Delft, yet students consistently struggle to build an intuition for how the gradient of a function relates to the contour lines that describe its shape.
+
+PRIME (_PRogramme of Innovation in Mathematics Education_) had been tackling this for years using lectures, textbooks, and static images. They wanted something more visceral: A tool that would let students physically engage with the math rather than just read about it. The brief was to build a mobile game where a student draws level curves on paper, points their phone at the drawing, and watches a 3D mountain materialize in augmented reality before simulating a lava flow down its steepest slopes.
+
+The idea is elegant in its pedagogy: if you can predict where the lava goes, you understand the gradient.
+
+---
+
+## How It Works: Three Modules, One Pipeline
+
+The application is split into three tightly coupled modules that pass data through a clean pipeline. Here's how a drawing becomes a flowing lava simulation.
+
+<p className="bg-gray-100/30 rounded p-4">
+  📸 Scanning → 🏔️ Model Generation → 🌄 Visualization
+</p>
+
+It meant different team members could work in parallel without stepping on each other's toes, and crucially, each module could fail independently without bringing down the entire system.
+
+### Module 1: Scanning and Image Processing
+
+Everything starts when a user takes a photo of their hand-drawn contour map. The problem is that phone photos are messy — angles, shadows, lens distortion. A robust image processing pipeline was needed to extract clean level curves from a real-world photograph.
+
+The pipeline runs as follows:
+
+1. **Image rectification** — The paper has four corner markers. The user drags handles to align them, and a perspective transformation is applied to straighten the image.
+2. **Grayscaling** — The colour photo is reduced to luminance.
+3. **Sharpening** — A sharpening filter clarifies the drawn lines.
+4. **Binarisation** — The image is reduced to pure black and white.
+5. **Level curve extraction** — OpenCV's `findContours` function detects all contour shapes and returns them as a hierarchical tree structure.
+
+The plan had originally been to detect the corner markers automatically, but no JavaScript library could do this reliably enough. Manual dragging was the pragmatic solution — and it turned out to be the right one, giving users direct control over the scan region and handling edge cases like partial shadows or messy backgrounds.
+
+For performance, OpenCV is compiled to **WebAssembly** using Emscripten, running entirely in the browser without any server round-trip.
+
+### Module 2: Model Generation
+
+The contour tree coming out of the scanner feeds directly into a Rust-based model generator, also compiled to WebAssembly. This is where the math lives.
+
+**From curves to terrain**
+
+Model construction follows the algorithm described by Wang et al. (2005) for extracting a Digital Elevation Model (DEM) from contour lines. The algorithm:
+
+- Creates a grid (raster) over the contour map area
+- Assigns heights to all raster cells that sit on a contour line
+- For every unassigned cell, casts rays in the four cardinal directions to find assigned neighbours, then computes a distance-weighted average altitude
+
+The result is a complete elevation grid — but it can be jagged and spiked.
+
+**Smoothing**
+
+To fix irregular artefacts without losing detail, a modified version of **Laplacian smoothing** is applied. The standard algorithm averages each point with its neighbours; this custom version goes further by grouping raster points into altitude layers (determined by which level curve they sit inside) and applying different smoothing parameters per layer. The effect is deliberate: a wide, gentle foot at the base of the volcano, and steep, dramatic gradients near the summit.
+
+**Surface Subdivision**
+
+Once smoothed, the raster is converted into a face-vertex mesh and a single iteration of the **Catmull-Clark surface subdivision** algorithm is applied. This recursively splits each four-sided face into four smaller faces using averaged vertices, roughly quadrupling the polygon count and yielding a dramatically smoother surface — without the blurring you'd get from more aggressive smoothing passes.
+
+The final mesh is serialised as a **GLTF** model (JSON with base64-encoded binary geometry blobs) and passed to the frontend.
+
+**Lava path generation**
+
+Lava paths are computed on the same mesh. Starting from the highest point, the algorithm traverses downhill by always stepping to the steepest adjacent edge — defined as the altitude difference divided by edge length. Paths can fork when two neighbouring edges have nearly identical steepness, producing a branching flow that covers the mountain realistically. Three conditions terminate a path: reaching the base, encountering an uphill edge, or hitting a maximum path length.
+
+### Module 3: Visualisation and AR
+
+The generated GLTF model is rendered using **A-Frame**, a popular WebGL-based framework. The AR overlay is handled by **AR.js**, which tracks the printed corner markers on the paper and anchors the 3D model to them in real time — meaning the mountain moves when you move the paper, and you can physically walk around it.
+
+The frontend is built in **SvelteKit**, which manages routing, state, and the shared data that flows between scanning, model preview, and AR views. Interactive elements — draggable corner markers during scanning, draggable steam turbine targets during gameplay — are powered by **p5.js**.
+
+---
+
+## The Technology Stack
+
+Choosing the right tools for a browser-based AR application with real-time 3D model generation required careful thought. The stack that emerged is unusual and genuinely interesting:
+
+<table>
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>Technology</th>
+      <th>Why</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Frontend framework</td>
+      <td>SvelteKit + TypeScript</td>
+      <td>No virtual DOM, fast compilation</td>
+    </tr>
+    <tr>
+      <td>Heavy computation</td>
+      <td>Rust → WebAssembly</td>
+      <td>Native-speed model generation in-browser</td>
+    </tr>
+    <tr>
+      <td>Image processing</td>
+      <td>OpenCV.js (C++ → WASM)</td>
+      <td>Battle-tested, performant</td>
+    </tr>
+    <tr>
+      <td>3D rendering</td>
+      <td>A-Frame + three.js</td>
+      <td>Mature, well-documented</td>
+    </tr>
+    <tr>
+      <td>AR tracking</td>
+      <td>AR.js + artoolkit5</td>
+      <td>Cross-platform, iOS support</td>
+    </tr>
+    <tr>
+      <td>3D model format</td>
+      <td>GLTF</td>
+      <td>Well-supported by WebGL renderers</td>
+    </tr>
+    <tr>
+      <td>Draggable UI</td>
+      <td>p5.js</td>
+      <td>Simple, reliable touch and mouse input</td>
+    </tr>
+  </tbody>
+</table>
+
+The decision to compile both OpenCV and the model generator to WebAssembly was the key architectural choice. It meant the entire application runs client-side on the user's device — no server required, no round-trips, and surprisingly good performance even on older hardware. Benchmarks on an iPhone 6s (released 2015) showed model generation completing in three to four seconds, with AR viewing running at 50–60 fps.
+
+---
+
+## The Honest Limitations
+
+No project ships without compromises, and this one is worth being transparent about.
+
+**AR.js and artoolkit5** are showing their age. The underlying artoolkit5 library has been effectively unmaintained for years. The application works around this by using A-Frame as an abstraction layer — swapping AR.js for **WebXR** in the future will be a configuration change, not a rewrite. At the time of development, WebXR lacked iOS support; that situation has been improving, and the team explicitly recommended making the switch in the next development cycle.
+
+**Automatic marker detection** was planned but proved impractical with available JavaScript libraries. The manual drag-to-align approach works well, but adds a step for users.
+
+The **screen-sharing feature** requested by PRIME — so lecturers could broadcast their phone screen to a classroom projector — was dropped. Mobile browsers do not implement the Screen Capture API, making a true stream technically infeasible within the project's scope.
+
+---
+
+## What It Proves
+
+AR LavaFlow demonstrates something worth noting beyond its immediate educational context: **demanding 3D computation is no longer server-only work**. By combining Rust compiled to WebAssembly with OpenCV.js and A-Frame, this student team shipped a pipeline that processes an image, builds a smoothed 3D terrain model, computes branching flow paths, and renders everything in augmented reality — entirely within a mobile browser, with no backend.
+
+---
+
+_AR LavaFlow was developed as part of the CSE2000 Software Project at TU Delft in 2022 by A. de Bruijn, R. Dur, P. Hengst, J. van der Kris, and J. van Marrewijk, under the supervision of PRIME and the Software Project Committee._
