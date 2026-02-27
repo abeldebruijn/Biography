@@ -1,16 +1,11 @@
 "use client";
 
-import { Html, useGLTF, useProgress } from "@react-three/drei";
+import { Html, useGLTF } from "@react-three/drei";
 import { useEffect, useState } from "react";
 
 type MacbookModelProps = {
   url?: string;
 };
-
-export function MacbookLoader() {
-  const { progress } = useProgress();
-  return <Html center>{Math.round(progress)}%</Html>;
-}
 
 function LoadedModel({ url }: { url: string }) {
   const gltf = useGLTF(url) as any;

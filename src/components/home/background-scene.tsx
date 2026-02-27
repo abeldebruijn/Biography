@@ -72,16 +72,8 @@ export function BackgroundScene() {
 
       setGyro({
         available: true,
-        azimuth: clamp(
-          (event.gamma / 45) * CAMERA_AZIMUTH_LIMIT,
-          -CAMERA_AZIMUTH_LIMIT,
-          CAMERA_AZIMUTH_LIMIT,
-        ),
-        polar: clamp(
-          Math.PI / 2 - (event.beta / 60) * CAMERA_POLAR_LIMIT,
-          Math.PI / 2 - CAMERA_POLAR_LIMIT,
-          Math.PI / 2 + CAMERA_POLAR_LIMIT,
-        ),
+        azimuth: (event.gamma / 45) * CAMERA_AZIMUTH_LIMIT,
+        polar: Math.PI / 2 - (event.beta / 60) * CAMERA_POLAR_LIMIT,
       });
     };
 

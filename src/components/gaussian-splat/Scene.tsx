@@ -8,7 +8,7 @@ import {
 import { useFrame, useThree } from "@react-three/fiber";
 import type { SplatMesh as SparkSplatMesh } from "@sparkjsdev/spark";
 import { Suspense, useMemo, useRef } from "react";
-import MacbookModel, { MacbookLoader } from "./MacbookModel";
+import MacbookModel from "./MacbookModel";
 import { SparkRenderer } from "./spark-renderer";
 import { SplatMesh } from "./splat-mesh";
 
@@ -83,15 +83,15 @@ export function Scene({ mouse, gyro }: SceneProps) {
           two: CameraControlsImpl.ACTION.NONE,
           three: CameraControlsImpl.ACTION.NONE,
         }}
-        // minPolarAngle={Math.PI / 2 - 0.15}
-        // maxPolarAngle={Math.PI / 2 + 0.15}
-        // minAzimuthAngle={-0.2}
-        // maxAzimuthAngle={0.2}
+        minPolarAngle={Math.PI / 2 - 0.15}
+        maxPolarAngle={Math.PI / 2 + 0.15}
+        minAzimuthAngle={-0.2}
+        maxAzimuthAngle={0.2}
       />
 
-      <Suspense fallback={<MacbookLoader />}>
+      <Suspense fallback={null}>
         <group
-          position={[-0.125, -0.36, -2.5]}
+          position={[-0.1, -0.45, -2.5]}
           rotation={[-2.0, -Math.PI / 2 - 0.5, -2.0]}
           scale={0.08}
         >
@@ -101,7 +101,7 @@ export function Scene({ mouse, gyro }: SceneProps) {
 
       <SparkRenderer args={[sparkRendererArgs]}>
         {/* This particular splat mesh is upside down */}
-        <group rotation={[-Math.PI + 0.1, 0, 0]} position={[0, -0.25, 0]}>
+        <group rotation={[-Math.PI, 0, 0]} position={[0, -0.1, 0]}>
           <SplatMesh ref={meshRef} args={[splatMeshArgs]} />
         </group>
       </SparkRenderer>
