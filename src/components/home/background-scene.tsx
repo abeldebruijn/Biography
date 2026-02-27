@@ -128,12 +128,13 @@ export function BackgroundScene() {
           setMouse({ x, y });
         }}
       >
-        <div className="max-w-3xl">
-          <h1 className="animate-hero-enter font-(family-name:--font-cormorant) text-[clamp(2.8rem,10vw,7.1rem)] leading-[0.9] font-semibold tracking-[-0.03em]">
+        <div className="relative max-w-3xl">
+          <div className="pointer-events-none absolute -left-20 lg:-left-15 -top-14 h-70 w-xl -rotate-6 bg-radial from-background/90 via-background/70 via-40% to-background/0 to-65% rounded-[57%_43%_58%_42%/46%_38%_62%_54%] scale-150" />
+          <h1 className="animate-hero-enter relative z-10 font-(family-name:--font-cormorant) text-[clamp(2.8rem,10vw,7.1rem)] leading-[0.9] font-semibold tracking-[-0.03em]">
             Abel de Bruijn
           </h1>
           <p
-            className="animate-hero-enter mt-2 max-w-lg text-base text-[#d9e3f4]/90 sm:text-lg"
+            className="animate-hero-enter relative z-10 mt-2 max-w-lg text-base text-[#d9e3f4]/90 sm:text-lg"
             style={{ animationDelay: "120ms" }}
           >
             Web developer based in the Netherlands, with a background in
