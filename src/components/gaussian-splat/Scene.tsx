@@ -40,7 +40,7 @@ export function Scene({ mouse, gyro }: SceneProps) {
   const splatMeshArgs = useMemo(
     () =>
       ({
-        url: "/assets/test-lod.rad",
+        url: "/assets/in-de-tuin.rad",
         paged: true,
       }) as const,
     [],
@@ -91,7 +91,7 @@ export function Scene({ mouse, gyro }: SceneProps) {
 
       <SparkRenderer args={[sparkRendererArgs]}>
         {/* This particular splat mesh is upside down */}
-        <group rotation={[-Math.PI, 0, 0]}>
+        <group rotation={[-Math.PI + 0.1, 0, 0]} position={[0, -0.5, 0]}>
           <SplatMesh ref={meshRef} args={[splatMeshArgs]} />
         </group>
       </SparkRenderer>

@@ -1,18 +1,134 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> This is only used to make mouse events work in the background scene </explanation> */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Canvas } from "@/components/canvas";
+import {
+  DEVICE_ORIENTATION_PERMISSION_GRANTED_EVENT,
+  type DeviceOrientationPermissionState,
+  getDeviceOrientationPermissionState,
+  requestDeviceOrientationPermission,
+} from "@/components/gaussian-splat/deviceOrientationPermissions";
 import { Scene } from "@/components/gaussian-splat/Scene";
 import { cn } from "@/lib/utils";
 import { StaggeredNav } from "./staggered-nav";
+import { is_touch_device } from "@/lib/is-touch-device";
+
+type GyroData = {
+  available: boolean;
+  azimuth: number;
+  polar: number;
+};
+
+const CAMERA_AZIMUTH_LIMIT = 0.1;
+const CAMERA_POLAR_LIMIT = 0.15;
+const GYRO_AUTO_DISABLE_MS = 30_000;
+const IS_TOUCH_DEVICE = is_touch_device();
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
 
 export function BackgroundScene() {
   // mouse position in viewport, normalized to -1..1
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const [gyro, setGyro] = useState<GyroData | undefined>(undefined);
+  const [permissionState, setPermissionState] =
+    useState<DeviceOrientationPermissionState>("unsupported");
+  const [isGyroEnabled, setIsGyroEnabled] = useState(false);
+
+  useEffect(() => {
+    const nextPermissionState = getDeviceOrientationPermissionState();
+    setPermissionState(nextPermissionState);
+    setIsGyroEnabled(nextPermissionState === "granted");
+
+    const handlePermissionGranted = () => {
+      setPermissionState("granted");
+      setIsGyroEnabled(true);
+    };
+
+    window.addEventListener(
+      DEVICE_ORIENTATION_PERMISSION_GRANTED_EVENT,
+      handlePermissionGranted,
+    );
+
+    return () => {
+      window.removeEventListener(
+        DEVICE_ORIENTATION_PERMISSION_GRANTED_EVENT,
+        handlePermissionGranted,
+      );
+    };
+  }, []);
+
+  useEffect(() => {
+    if (permissionState !== "granted" || !isGyroEnabled) {
+      setGyro(undefined);
+      return;
+    }
+
+    const handleOrientation = (event: DeviceOrientationEvent) => {
+      if (event.beta === null || event.gamma === null) {
+        return;
+      }
+
+      setGyro({
+        available: true,
+        azimuth: clamp(
+          (event.gamma / 45) * CAMERA_AZIMUTH_LIMIT,
+          -CAMERA_AZIMUTH_LIMIT,
+          CAMERA_AZIMUTH_LIMIT,
+        ),
+        polar: clamp(
+          Math.PI / 2 - (event.beta / 60) * CAMERA_POLAR_LIMIT,
+          Math.PI / 2 - CAMERA_POLAR_LIMIT,
+          Math.PI / 2 + CAMERA_POLAR_LIMIT,
+        ),
+      });
+    };
+
+    window.addEventListener("deviceorientation", handleOrientation, true);
+
+    return () => {
+      window.removeEventListener("deviceorientation", handleOrientation, true);
+    };
+  }, [isGyroEnabled, permissionState]);
+
+  useEffect(() => {
+    if (!isGyroEnabled) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsGyroEnabled(false);
+      setGyro(undefined);
+    }, GYRO_AUTO_DISABLE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isGyroEnabled]);
+
+  const handleEnableGyroscope = async () => {
+    if (permissionState === "granted") {
+      setIsGyroEnabled(true);
+      return;
+    }
+
+    const permission = await requestDeviceOrientationPermission();
+    setPermissionState(permission);
+
+    if (permission === "granted") {
+      setIsGyroEnabled(true);
+      window.dispatchEvent(
+        new CustomEvent(DEVICE_ORIENTATION_PERMISSION_GRANTED_EVENT),
+      );
+      return;
+    }
+
+    setIsGyroEnabled(false);
+  };
 
   return (
-    <header className="relative isolate min-h-svh w-full overflow-hidden text-[#f2f4f8] bg-linear-to-b from-[#7887B1] via-[#9BA7C2] via-60% to-[#434444]">
+    <header className="relative isolate min-h-svh w-full overflow-hidden text-[#f2f4f8] bg-[#987D57]">
       <div
         className="absolute top-10 z-10 w-full flex-col lg:flex-row px-10 py-12 sm:px-20 flex gap-8 lg:items-end justify-between"
         onMouseMove={(e) => {
@@ -46,9 +162,9 @@ export function BackgroundScene() {
         </div>
       </div>
 
-      <div className="h-dvh w-full">
+      <div className="h-svh w-full">
         <Canvas gl={{ antialias: false }}>
-          <Scene mouse={mouse} />
+          <Scene mouse={mouse} gyro={gyro} />
         </Canvas>
       </div>
 
@@ -63,6 +179,18 @@ export function BackgroundScene() {
           setMouse({ x, y });
         }}
       />
+
+      {IS_TOUCH_DEVICE &&
+      (permissionState === "required" ||
+        (permissionState === "granted" && !isGyroEnabled)) ? (
+        <button
+          type="button"
+          onClick={handleEnableGyroscope}
+          className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 rounded-full border border-[#afd2ff]/70 bg-black/35 px-4 py-2 text-sm font-medium text-[#f2f4f8] backdrop-blur-sm transition-colors hover:bg-black/45"
+        >
+          Enable gyroscope
+        </button>
+      ) : null}
     </header>
   );
 }
