@@ -117,7 +117,7 @@ export function BackgroundScene() {
   };
 
   return (
-    <header className="relative isolate min-h-svh w-full overflow-hidden text-[#f2f4f8] ">
+    <header className="relative isolate min-h-svh w-full overflow-hidden text-[#f2f4f8] saturate-150">
       <div
         className="absolute top-10 z-10 w-full flex-col lg:flex-row px-10 py-12 sm:px-20 flex gap-8 lg:items-end justify-between"
         onMouseMove={(e) => {
