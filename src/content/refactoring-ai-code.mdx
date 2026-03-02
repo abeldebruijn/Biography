@@ -1,0 +1,85 @@
+---
+title: 'Refactoring AI code'
+date: '2026-03-01'
+description: 'Exploring AI-generated code smells and strategies to resolve them.'
+isProject: false
+---
+
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from '@/components/ui/hover-card';
+import Image from 'next/image';
+import { Detail, DetailTrigger, DetailContent } from '@/components/ui/detail';
+
+Recently I created a multiplayer game using codex-5.3. The game prompts friends to think of a highly personal question and answer.
+During the game, they must answer the question and try to guess the answer. Points are
+awarded based on how correct and/or creative the answer is. The game was a created using a tech stack of Next.js, Tailwind CSS
+and Convex. I used the <HoverCard><HoverCardTrigger href="https://convex.link/convex_github_copilot_instructions">convex ai instructions</HoverCardTrigger><HoverCardContent><img src="https://docs.convex.dev/img/social.png" width="1200" height="527" />
+AI Code Generation | Convex Developer Hub</HoverCardContent></HoverCard>
+to build the backend and API routes. The game was a fun experiment, but it was also a great example of some of the code smells that can arise when
+using AI coding assistants.
+
+The AI generated code was often functional and correct, but it was also often verbose, repetitive, and lacked modularity. This AI-generated code can make it hard to maintain and extend in the future.
+For example, <HoverCard><HoverCardTrigger href="https://github.com/abeldebruijn/niches/blob/09faf5e6cf488241566e844baefde2d5c245fe33/convex/game.ts">the main game logic</HoverCardTrigger><HoverCardContent><img src="https://opengraph.githubassets.com/d3fbc3701930990cfd17635faed4afd47abae1a21068615bf7c7c03972263bd0/abeldebruijn/niches" width="1200" height="600" /> Niches game > convex > game.ts</HoverCardContent></HoverCard>
+was generated as a single, monolithic function that handled everything from user input to game state management.
+The AI also generated a lot of duplicated code, especially when it came to handling similar logic in different parts of the application.
+The following sections explore some of the common code smells that can arise when using AI coding assistants, as well as strategies for resolving them.
+
+## Code smells
+
+A "code smell" is a surface indication that usually corresponds to a deeper problem in the system. While not necessarily
+a bug, it signals weaknesses in design that may slow down development or increase the risk of errors in the future.
+
+### Duplicated code
+
+AI coding assistants often generate code based on localized context windows. If you ask an AI to solve a problem in one
+file, and then ask it to solve a similar problem in another, it will likely generate the exact same logic twice rather
+than abstracting it into a shared utility function. AI tends to optimize for immediate output rather than holistic DRY
+(Don't Repeat Yourself) architecture. Even worse, AI will copy your bad code (often written by older and worse models). If your
+existing codebase has code smells, the AI will use it as context and replicate the same patterns, compounding the issue.
+
+### God objects
+
+When given a complex prompt (e.g., "Write a script that scrapes this website, parses the data, and saves it to a database"),
+AI models usually generate a single, massive, monolithic function that does everything from top to bottom. AI struggles with
+pre-emptive modular design unless explicitly instructed to "break this down into small, single-responsibility functions."
+As seen in the example of the game, AI is happy to write monoliths because it lacks a human's intuition for organizing the file-system.
+
+### Some code smells that are lessened with LLMs
+
+Although AI coding assistants can introduce new code smells, they can also help reduce some common ones. For example, LLMs are often
+great at suggesting semantic and descriptive names for variables and functions.
+
+- **Poor Naming:** LLMs are often great at suggesting semantic and descriptive names for variables and functions. AI models are
+  essentially giant language prediction engines trained on millions of high-quality repositories. They are exceptionally good at
+  inferring context and generating descriptive, readable, and highly standard names for variables, classes, and functions. You will
+  rarely see an AI use single-letter variables (like x or data) unless it's in a standard loop.
+
+- **Lack of Comments:** LLMs can quickly document complex logic and add clear docstrings. Although they may introduce a another
+  code smell of "over-commenting" (where the comments are redundant or state the obvious). hey often add redundant comments
+  explaining exactly what the code does (e.g., writing `// increment i by 1` above `i++`), which clutters the file. They also
+  frequently leave behind commented-out legacy code when rewriting functions.
+
+## Resolve AI code smells
+
+### Plan mode
+
+### Two-codebase approach
+
+Plan mode can get you quite far in resolving some of these AI-generated code smells and building robust applications,
+[Theo Browne suggests a two-codebase approach](https://www.youtube.com/watch?v=73F6ZURl1MQ&t=2449s):
+
+Use one codebase with AI rapidly to prototype and see if a feature actually works or proves the concept. Have a human
+engineering team (or a strict, carefully orchestrated secondary AI process) properly build and architect the working concept.
+
+> Instead of measure twice cut once. [...] have: 'File two PRs merge once'
+> — Theo Browne
+
+Although this approach may seem inefficient, it can actually save time in the long run by preventing the accumulation
+of technical debt and ensuring that the final codebase is well-structured and maintainable.
+
+### Refactor mode
+
+Ask the AI to
