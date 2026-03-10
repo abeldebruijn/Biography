@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/hover-card';
 import Image from 'next/image';
 import { Detail, DetailTrigger, DetailContent } from '@/components/ui/detail';
+import { Picture, PictureCaption } from '@/components/ui/picture';
 
 Recently I created a multiplayer game using codex-5.3. The game prompts friends to think of a highly personal question and answer.
 During the game, they must answer the question and try to guess the answer. Points are
@@ -137,5 +138,30 @@ convex/
 ```
 
 This refactor has made the codebase much more maintainable and extensible. It is now easier to navigate and understand the different functionalities
-of the game for both developers and AI systems. The addition of the testing suite before refactoring was crucial in ensuring that all existing
-functionality was preserved and that the refactor did not introduce any new bugs.
+of the game for both developers and AI systems.
+
+> This refactor mode presents a new issue: How do you know if your refactor introduced any bugs?
+
+### Spot the Difference
+
+The addition of the testing suite before refactoring is crucial in ensuring that all existing functionality was preserved and that the refactor
+did not introduce any new bugs. Adding tests can never hurt, and it helps catch regressions early. However, it does not guarantee that the refactor produced the
+same results as the original code. Although GPT's are well equipped to transform code (T in GPT), they may still produce unexpected results.
+
+Therefore, I recently added a new bit to my prompts:
+> Use `cp` to copy the original file before editing. Copy the contents to `**/_backup/*`.
+
+Using this approach, you can highlight any piece of code that you expect to be copied somewhere else in the refactor. And use `diff` to compare the original and modified files.
+
+Recently this became even easier with the Zed editor, which supports a command called [`editor: diff clipboard with selection`](https://zed.dev/blog/hidden-gems-part-3#spot-the-difference).
+
+
+<Picture
+  src="https://zed.dev/img/post/hidden-gems-part-3/diff-clipboard-with-selection.webp"
+  alt="From Zed > Hidden Gems Part 3"
+  width={2992}
+  height={1876}>
+<PictureCaption>From [zed.dev/blog > Hidden Gems Part 3](https://zed.dev/blog/hidden-gems-part-3)</PictureCaption>
+</Picture>
+
+This makes it easy to spot the differences between the original and modified code. Once you've identified any discrepancies, you can revert the changes and try again.
