@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { getAllPosts } from "@/lib/posts";
 import { PostsExplorer } from "./posts-explorer";
@@ -40,7 +41,15 @@ export default async function PostsIndexPage() {
         </section>
       </div>
 
-      <PostsExplorer posts={allPosts} />
+      <Suspense
+        fallback={
+          <div className="rounded-3xl border border-[#9eceff]/16 bg-[#0c1d32]/66 p-8 text-center text-sm text-[#d7e5f7]/88">
+            Loading posts…
+          </div>
+        }
+      >
+        <PostsExplorer posts={allPosts} />
+      </Suspense>
     </main>
   );
 }
