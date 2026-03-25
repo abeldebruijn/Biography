@@ -1,0 +1,81 @@
+---
+title: 'Open-LA-Applets: Teaching Subspaces Through Play'
+date: '2026-03-25'
+description: 'How TU Delft uses interactive applets to make subspaces visual, testable, and easier to understand.'
+isProject: true
+---
+
+> Most students do not get stuck on the formal definition first. They get stuck on seeing what the definition is trying to protect.
+>
+> _What if you could test that definition like a game instead of memorizing it like a rule?_
+
+[Open-LA-Applets](https://openla.ewi.tudelft.nl/applet) is a collection of interactive math applets used inside TU Delft's [interactive Linear Algebra textbook](https://interactivetextbooks.tudelft.nl/linear-algebra/). The book is also published openly as [Linear Algebra - 2nd Edition](https://books.open.tudelft.nl/home/catalog/book/241). Together, they turn abstract ideas into things students can move, stretch, test, and sometimes break.
+
+One of the clearest examples appears in the chapter on [Subspaces of R^n](https://interactivetextbooks.tudelft.nl/linear-algebra/Chapter4/Subspaces_of_Rn.html). Subspaces are usually introduced with compact notation and short definitions. That is efficient for a textbook, but not always for a beginner. The applet in this chapter closes that gap by turning the idea into an experiment.
+
+![The subspaces game from the TU Delft linear algebra textbook](https://interactivetextbooks.tudelft.nl/linear-algebra/_images/Fig-TheGame.svg)
+
+---
+
+## First: what is a subspace?
+
+Before "subspace", there is one simpler idea: a vector. You can think of a vector as an arrow. It has a direction and a length. In the plane, you can draw it as an arrow from the origin to a point.
+
+A subspace is a collection of those arrows that stays consistent under the main moves of linear algebra:
+
+1. adding two vectors
+2. scaling a vector by a number
+
+For a set to be a subspace, three things must be true:
+
+1. It contains the zero vector, the arrow of length zero.
+2. If you add two vectors from the set, the result stays in the set.
+3. If you multiply a vector in the set by any real number, the result stays in the set.
+
+In plain language: a subspace is a set you cannot escape from by adding vectors or stretching them.
+
+A line through the origin is a classic example. If you add two arrows on that line, you stay on the line. If you double one of them, or flip it by multiplying by `-1`, you still stay on the line. A disk is different. It may contain the origin, but a vector inside the disk can be stretched until it leaves the disk. That means the disk is not a subspace.
+
+---
+
+## Why this is hard on paper
+
+This definition is short, but it asks a beginner to keep three tests in mind at once. It also asks them to ignore appearances. A shape can look neat, balanced, and geometric without actually obeying the rules.
+
+That is where Open-LA-Applets is effective. The project does not use interaction as decoration. It places interaction exactly where intuition tends to fail.
+
+---
+
+## The subspaces applet
+
+The subspaces applet works like a small challenge. You select a set in the plane and try to prove that it is not a subspace by finding a counterexample.
+
+The left panel tests addition. You choose two vectors `u` and `v` inside the highlighted set and inspect `u + v`. If the sum lands outside the set, then the set fails the addition rule.
+
+The right panel tests scalar multiplication. You choose a vector `u` and a scalar `c`, then inspect `c * u`. If the result leaves the set, the set fails the scaling rule.
+
+This is a strong design choice because it teaches the core idea directly: being a subspace is not about how a set looks. It is about what happens after you operate on it.
+
+The disk shown in the applet is a good example. At first glance it looks symmetric and well-behaved. A beginner could easily assume it should count as a subspace. But once you scale a vector far enough, the new vector leaves the disk. The applet makes that mistake visible in seconds.
+
+By contrast, a line through the origin keeps passing the test. Add two vectors on the line and the result stays there. Scale one and it still stays there. The rule stops feeling arbitrary because the student can see it survive repeated trials.
+
+---
+
+## Why this project matters
+
+The broader textbook already emphasizes geometry, exercises, and guided feedback. Open-LA-Applets feels like the interactive layer that makes that approach work in practice. The applets are embedded right next to the theory, so students can move from reading a definition to testing it immediately.
+
+That is especially valuable in first-year linear algebra. Many students do not need more symbols. They need a bridge between the symbols and the mental picture. The subspaces applet provides exactly that bridge.
+
+It also teaches a deeper mathematical habit: counterexamples matter. In this applet, failure is not a dead end. Failure is the lesson. When a student finds one case where addition or scaling escapes the set, they have understood something real.
+
+---
+
+## Final thought
+
+A lot of educational software tries to make learning more fun. Open-LA-Applets does something more useful: it makes structure visible.
+
+The subspaces applet is a strong example of that philosophy. It takes a definition that can feel abstract to a beginner and turns it into a visual test: can this set survive addition and scaling, or not? Once that becomes interactive, the concept becomes easier to trust, easier to remember, and easier to explain.
+
+That is good educational design.
