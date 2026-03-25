@@ -5,11 +5,16 @@ description: 'A project exploring augmented reality with a lava simulation.'
 isProject: true
 ---
 
+import { EmbedPage } from "@/components/embed-page";
+
+
 > Education is swiftly shifting from printed materials to a digital setup. Universities worldwide began offering online courses in 1982, with Connected Education launching the first fully online master's program in 1985 (Withrow, 1997). In this transition, institutions are developing digital tools to supplement lectures, usable in both physical and online formats.
 >
 > _What if students could hold a volcano in their hands and watch lava carve paths through it; all to learn directional derivatives?_
 
 That was the challenge handed to a five-person student team at TU Delft's CSE2000 Software Project course in the spring of 2022. The result was **AR LavaFlow**: a mobile web application that scans a hand-drawn contour map, builds a 3D mountain model from it in real time, and then simulates lava flowing down the steepest gradients all through augmented reality.
+
+<EmbedPage src="https://lava.ewi.tudelft.nl/" title="AR lava game" className="bg-blue-50" />
 
 ---
 
@@ -27,9 +32,9 @@ The idea is elegant in its pedagogy: if you can predict where the lava goes, you
 
 The application is split into three tightly coupled modules that pass data through a clean pipeline. Here's how a drawing becomes a flowing lava simulation.
 
-<p className="bg-gray-100/30 rounded p-4">
+<div className="bg-gray-100/30 rounded p-4">
   📸 Scanning → 🏔️ Model Generation → 🌄 Visualization
-</p>
+</div>
 
 It meant different team members could work in parallel without stepping on each other's toes, and crucially, each module could fail independently without bringing down the entire system.
 

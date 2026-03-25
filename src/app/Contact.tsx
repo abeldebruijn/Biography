@@ -1,12 +1,9 @@
+import { ExternalLink } from "lucide-react";
 import { unstable_cache as cache } from "next/cache";
 import Link from "next/link";
 import { ContactContributionGraph } from "@/components/home/contact-contribution-graph";
-import {
-  ContributionGraphLegend,
-  type Activity,
-} from "@/components/kibo-ui/contribution-graph";
+import type { Activity } from "@/components/kibo-ui/contribution-graph";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
 
 type Response = {
   contributions: Activity[];
