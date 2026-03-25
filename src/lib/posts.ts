@@ -1,6 +1,10 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import type { ComponentType } from "react";
+import { comparePostsByDateDesc } from "./post-utils";
+
+export type { PostCategory } from "./post-utils";
+export { getPostCategory } from "./post-utils";
 
 const CONTENT_DIR = path.join(process.cwd(), "src", "content");
 
@@ -10,8 +14,6 @@ type ImportedPostModule = {
   default: ComponentType;
   frontmatter?: RawPostFrontmatter;
 };
-
-export type PostCategory = "projects" | "skills" | "posts";
 
 export type PostFrontmatter = {
   title: string;
@@ -26,20 +28,6 @@ export type PostSummary = {
   frontmatter: PostFrontmatter;
 };
 
-export function getPostCategory(
-  frontmatter: Pick<PostFrontmatter, "isProject" | "isSkill">,
-): PostCategory {
-  if (frontmatter.isProject) {
-    return "projects";
-  }
-
-  if (frontmatter.isSkill) {
-    return "skills";
-  }
-
-  return "posts";
-}
-
 function normalizeFrontmatter(
   slug: string,
   frontmatter?: RawPostFrontmatter,
@@ -51,14 +39,6 @@ function normalizeFrontmatter(
     isProject: frontmatter?.isProject ?? false,
     isSkill: frontmatter?.isSkill ?? false,
   };
-}
-
-function isValidDateString(dateValue: string): boolean {
-  if (!dateValue) {
-    return false;
-  }
-
-  return !Number.isNaN(Date.parse(dateValue));
 }
 
 export async function getPostSlugs(): Promise<string[]> {
@@ -95,19 +75,5 @@ export async function getAllPosts(): Promise<PostSummary[]> {
     }),
   );
 
-  return posts.sort((a, b) => {
-    const dateA = a.frontmatter.date;
-    const dateB = b.frontmatter.date;
-
-    if (isValidDateString(dateA) && isValidDateString(dateB)) {
-      const timestampA = Date.parse(dateA);
-      const timestampB = Date.parse(dateB);
-
-      if (timestampA !== timestampB) {
-        return timestampB - timestampA;
-      }
-    }
-
-    return a.slug.localeCompare(b.slug);
-  });
+  return posts.sort(comparePostsByDateDesc);
 }

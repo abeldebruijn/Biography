@@ -28,7 +28,7 @@ export default async function PostPage({ params }: PostPageProps) {
       ? { href: "/#projects", label: "Projects" }
       : postCategory === "skills"
         ? { href: "/#skills", label: "Skills" }
-        : { href: "/#posts", label: "Posts" };
+        : { href: "/posts", label: "Posts" };
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-16 sm:px-10">
