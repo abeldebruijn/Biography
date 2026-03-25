@@ -4,25 +4,41 @@ import type { ComponentType } from "react";
 
 const CONTENT_DIR = path.join(process.cwd(), "src", "content");
 
-type RawPostFrontmatter = Partial<PostFrontmatter> &
-  Record<string, unknown> & { isProject?: boolean };
+type RawPostFrontmatter = Partial<PostFrontmatter> & Record<string, unknown>;
 
 type ImportedPostModule = {
   default: ComponentType;
   frontmatter?: RawPostFrontmatter;
 };
 
+export type PostCategory = "projects" | "skills" | "posts";
+
 export type PostFrontmatter = {
   title: string;
   date: string;
   description: string;
   isProject: boolean;
+  isSkill: boolean;
 };
 
 export type PostSummary = {
   slug: string;
   frontmatter: PostFrontmatter;
 };
+
+export function getPostCategory(
+  frontmatter: Pick<PostFrontmatter, "isProject" | "isSkill">,
+): PostCategory {
+  if (frontmatter.isProject) {
+    return "projects";
+  }
+
+  if (frontmatter.isSkill) {
+    return "skills";
+  }
+
+  return "posts";
+}
 
 function normalizeFrontmatter(
   slug: string,
@@ -33,6 +49,7 @@ function normalizeFrontmatter(
     date: frontmatter?.date ?? "",
     description: frontmatter?.description ?? "",
     isProject: frontmatter?.isProject ?? false,
+    isSkill: frontmatter?.isSkill ?? false,
   };
 }
 

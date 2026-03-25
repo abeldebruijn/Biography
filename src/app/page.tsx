@@ -3,6 +3,7 @@ import { Contact } from "./Contact";
 import { CV } from "./CV";
 import Posts from "./Posts";
 import Projects from "./Projects";
+import Skills from "./Skills";
 
 export default function Home() {
   return (
@@ -17,6 +18,8 @@ export default function Home() {
         <Contact />
 
         <Projects />
+
+        <Skills />
 
         <Posts />
       </main>

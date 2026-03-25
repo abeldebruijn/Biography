@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPosts, getPostCategory } from "@/lib/posts";
 
 export default async function Projects() {
   const allPosts = await getAllPosts();
-  const projectPosts = allPosts.filter((post) => post.frontmatter.isProject);
+  const projectPosts = allPosts.filter(
+    (post) => getPostCategory(post.frontmatter) === "projects",
+  );
 
   return (
     <section className="relative z-20 mx-auto mt-2 w-full max-w-5xl px-4 pb-16 sm:px-8">
