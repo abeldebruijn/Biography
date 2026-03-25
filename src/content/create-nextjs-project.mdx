@@ -1,0 +1,87 @@
+---
+title: 'Create Next.js Project'
+date: '2026-03-25'
+description: 'Bootstraps a Next.js app with TypeScript, Tailwind, Biome, App Router, shadcn/ui, and Convex.'
+isProject: false
+isSkill: true
+---
+
+The `create-nextjs-project` skill is for project setup. It creates a modern Next.js application with the baseline tooling already wired in, including TypeScript, Tailwind, App Router, Biome, import aliases, shadcn/ui, and Convex.
+
+In practice, use it when you want to start a new app without spending time on repetitive setup steps. It is most useful for greenfield work where you want a solid default stack from minute one.
+
+### Install
+
+```
+---
+name: create-nextjs-project
+description: Create a new Next.js app with TypeScript, Tailwind, Biome, App Router, `src/`, import aliasing, shadcn/ui setup, baseline UI components, and Convex installed. Use when the user asks to create or bootstrap a Next.js project and provides a project name, especially for prompts like `Create a nextjs project with the following name "[NAME]"`.
+---
+
+# Create Nextjs Project
+
+## Overview
+
+Create the app in a fixed sequence with one user input: the app name. Keep the workflow deterministic and normalize obvious command typos from the request so the setup succeeds.
+
+## Workflow
+
+1. Read the requested app name and use it as `{app-name}`.
+2. Run the Next.js bootstrap command from the target parent directory:
+
+```bash
+npx create-next-app@latest {app-name} --ts --tailwind --biome --app --src-dir --import-alias "@/*" --use-bun
+```
+
+3. Enter the new project directory:
+
+```bash
+cd {app-name}
+```
+
+4. Initialize shadcn/ui:
+
+```bash
+pnpm dlx shadcn@latest init
+```
+
+5. Install the requested baseline components:
+
+```bash
+pnpm dlx shadcn@latest add button badge chip checkbox dialog dropdown-menu field sonner
+```
+
+6. Install Convex:
+
+```bash
+bun add convex
+```
+
+## Reliability Rules
+
+- Treat these input typos as obvious corrections rather than literal commands:
+  - Use `--use-bun`, not a Unicode dash variant.
+  - Use `pnpm dlx shadcn@latest init`, not `nm dlx ...`.
+  - Use `badge`, not `bagde`.
+- Keep the project name exactly as provided unless it is clearly invalid for `create-next-app`; if invalid, normalize it to a package-safe name and state the adjustment.
+- If `shadcn add` reports that `chip` is unavailable, continue with the supported components and report that `chip` was skipped because the registry did not expose it.
+- Do not substitute package managers unless the environment forces it. This workflow intentionally mixes `npx`, `pnpm dlx`, and `bun`.
+
+## Expected Invocation
+
+Trigger on prompts in this shape:
+
+```text
+Create a nextjs project with the following name "[NAME]"
+```
+
+## Output
+
+Report:
+- The final app directory name
+- Whether shadcn initialized successfully
+- Which components were installed
+- Whether any requested component had to be skipped or corrected
+- Whether Convex installed successfully
+
+```

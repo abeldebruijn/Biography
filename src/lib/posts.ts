@@ -1,11 +1,14 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import type { ComponentType } from "react";
+import { comparePostsByDateDesc } from "./post-utils";
+
+export type { PostCategory } from "./post-utils";
+export { getPostCategory } from "./post-utils";
 
 const CONTENT_DIR = path.join(process.cwd(), "src", "content");
 
-type RawPostFrontmatter = Partial<PostFrontmatter> &
-  Record<string, unknown> & { isProject?: boolean };
+type RawPostFrontmatter = Partial<PostFrontmatter> & Record<string, unknown>;
 
 type ImportedPostModule = {
   default: ComponentType;
@@ -17,6 +20,7 @@ export type PostFrontmatter = {
   date: string;
   description: string;
   isProject: boolean;
+  isSkill: boolean;
 };
 
 export type PostSummary = {
@@ -33,15 +37,8 @@ function normalizeFrontmatter(
     date: frontmatter?.date ?? "",
     description: frontmatter?.description ?? "",
     isProject: frontmatter?.isProject ?? false,
+    isSkill: frontmatter?.isSkill ?? false,
   };
-}
-
-function isValidDateString(dateValue: string): boolean {
-  if (!dateValue) {
-    return false;
-  }
-
-  return !Number.isNaN(Date.parse(dateValue));
 }
 
 export async function getPostSlugs(): Promise<string[]> {
@@ -78,19 +75,5 @@ export async function getAllPosts(): Promise<PostSummary[]> {
     }),
   );
 
-  return posts.sort((a, b) => {
-    const dateA = a.frontmatter.date;
-    const dateB = b.frontmatter.date;
-
-    if (isValidDateString(dateA) && isValidDateString(dateB)) {
-      const timestampA = Date.parse(dateA);
-      const timestampB = Date.parse(dateB);
-
-      if (timestampA !== timestampB) {
-        return timestampB - timestampA;
-      }
-    }
-
-    return a.slug.localeCompare(b.slug);
-  });
+  return posts.sort(comparePostsByDateDesc);
 }

@@ -1,0 +1,21 @@
+---
+title: 'GitButler /but'
+date: '2026-03-25'
+description: 'Handles commits, diffs, branches, rebases, and pull request work through GitButler-style commands.'
+isProject: false
+isSkill: true
+---
+
+The `but` skill is the version control assistant for this environment. It covers the usual Git workflows such as checking status, staging work, creating branches, reviewing diffs, committing, pushing, and preparing pull requests.
+
+GitButler is useful because it reframes source control around the work you are actually trying to do rather than around Git’s lower-level mechanics. Instead of juggling a pile of ad hoc commands, temporary commits, and manual branch cleanup, it emphasizes clearer change sets, better context around in-progress work, and a smoother path from local edits to reviewable history.
+
+In practice, use it when you want structured help around source control without dropping down into raw Git commands. It is a good fit for turning a messy working tree into a clean branch and commit history with less manual bookkeeping. It is especially helpful when you are splitting one large set of edits into smaller pieces, preparing polished commits for review, or moving between branch, rebase, diff, and pull request tasks without losing track of what changed and why.
+
+You can think of `but` as the interface for GitButler-style workflows inside this environment: use it to inspect what changed, organize edits into sensible units, shape commit history, and prepare branches for collaboration. If plain Git feels powerful but unnecessarily fiddly for everyday work, this skill gives you a more guided way to handle the same lifecycle.
+
+## Install
+
+```
+npx skills add gitbutlerapp/gitbutler -g
+```

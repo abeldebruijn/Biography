@@ -8,8 +8,9 @@ import { cn } from "@/lib/utils";
 const NAVIGATION_ITEMS = [
   { label: "CV", href: "#cv" },
   { label: "Projects", href: "#projects" },
+  { label: "Skills", href: "#skills" },
   { label: "Contact", href: "#contact" },
-  { label: "Posts", href: "#posts" },
+  { label: "Posts", href: "/posts" },
 ] as const;
 
 type StaggeredNavProps = {
