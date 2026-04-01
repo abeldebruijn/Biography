@@ -1,0 +1,94 @@
+---
+title: 'Training code models on minified code'
+date: '2026-04-01'
+description: 'Why training code models on minified code could help machines while making software harder for humans.'
+isProject: false
+isSkill: false
+---
+
+When news broke on March 31, 2026 that Claude Code’s source could be recovered through an exposed source map [Ars Technica](https://arstechnica.com/ai/2026/03/entire-claude-code-cli-source-code-leaks-thanks-to-exposed-map-file/) and [Layer5](https://layer5.io/blog/engineering/the-claude-code-source-leak-512000-lines-a-missing-npmignore-and-the-fastest-growing-repo-in-github-history). A source map is easiest to think of as a guide. It helps developers turn scrambled, compressed code back into the version humans can read, as [MDN explains](https://developer.mozilla.org/en-US/docs/Glossary/Source_map). That is useful for debugging.
+
+This incident made me think, as claude code's code is fully vibe coded, why not write the entire codebase in this obfuscated representation?
+
+## What is obfuscated code?
+
+Imagine trying to read a book where all the spaces, punctuation, and paragraphs have been removed. You could still see the letters, but it would be exhausting to understand. That is roughly what obfuscated or minified code feels like to a human.
+
+When programmers write software, they usually add spacing, indentation, comments, and descriptive names so other people can follow along. A simple program might look something like this:
+
+```
+userBalance = 1000;
+payment = 50;
+
+function calculateUserBalance() {
+ return userBalance - payment;
+}
+```
+
+A function might be called `calculateUserBalance`. After minification, that same name might become `c`.
+
+```
+a=1000;b=50;function c(){return a-b}
+```
+
+The code still works; it is functionally the smae. It is just much harder to read. This same unreadble version is what Anthropic shiped as its customers. The source map is a secret file that is usually not shiped to the end-customer. It is used to decode the obfuscated code, to give programmers a better clue where an error occured.
+
+Why do this at all? Mostly because smaller files are faster to send over the internet. More importantly for Anthropic, people are less likely to copy Claude Code features into their own projects.
+
+A computer does not care whether a variable is named `calculateUserBalance` or `a`; it only cares that the program runs.
+
+## Why it could help AI
+
+AI models also do not read code like humans do. They break text into chunks called tokens. More tokens usually means more memory use therefor a higher cost and less room for other information.
+
+That means all the things humans love in code, like spacing and descriptive names, can look wasteful from the AI’s point of view. A 2026 paper, [The Hidden Cost of Readability](https://conf.researchr.org/details/icse-2026/icse-2026-research-track/39/The-Hidden-Cost-of-Readability-How-Code-Formatting-Silently-Consumes-Your-LLM-Budget), found that removing formatting cut input tokens by an average of 24.5% in the tasks it tested, while performance stayed close. In plain English: the model could fit more code into the same “brain space.”
+
+Another study, Nicolas Hrubec’s thesis on [reducing token usage in software engineering agents](https://repositum.tuwien.at/handle/20.500.12708/224666), found something similar in a more practical setting. Using minified code cut average input token usage by 42%, while problem-solving performance dropped by 12% on the benchmark used. That is not perfect, but it is a clear trade many teams would consider: much cheaper AI, with only a moderate loss in accuracy.
+
+There is also a more interesting idea hiding underneath. Clear labels can help, but they can also mislead. Think of a moving box labeled “Kitchen Glassware.” You assume it contains plates and cups. But after a rushed move, someone reuses the box and fills it with books and cables instead. If you trust the label too much, you may think you understand what is inside before you have even opened it.
+
+Something similar can happen with AI and code. A model may see a polished name like `calculateCompoundInterest` and start predicting what the function probably does before it has really followed the implementation line by line.
+
+The [ObscuraCoder](https://iclr.cc/virtual/2025/poster/29407) project explored this by training code models on obfuscated code. The basic lesson was simple: when you remove some of the easy clues, the model has to pay more attention to the underlying structure.
+
+Side-effects of this way of training is increased performance in multilingual code. That matters because programmers do not all write code with the same naming style, comments, or mix of English words. Even though most code today is still written mostly in English. Some teams use English names, others mix in local language words, and many codebases contain short or inconsistent labels.
+
+So the upside is real. Minified code can make AI cheaper to run, faster to process, and sometimes more focused on raw logic instead of human-friendly hints.
+
+## Why it can go wrong
+
+The problem is that readable code does more than help humans feel comfortable. It carries meaning.
+
+Names, comments, and formatting tell you what the code is trying to do. They tell you the “why,” not just the “how.” Once you strip them away, you may still have a working program, but you lose a lot of context.
+
+That is exactly what the paper [When Names Disappear](https://openreview.net/forum?id=8t5TlFzUAU) found. Removing human-readable names badly hurt tasks like summarizing code, and it also reduced performance on some tasks that involve following execution. In other words, today’s models are not only reading logic. They are leaning heavily on the clues humans (or previous agents) leave behind.
+
+Then there is the human side. If an AI writes back in minified code, review gets worse fast. Bugs are harder to spot. Intent is harder to judge. Trust drops. Even if the machine is saving money, the people supervising it may lose time. And thus money.
+
+And that takes us back to source maps. They look like the obvious compromise. Let the AI work on the squished version, then use a source map to get back to the readable version. But that only works cleanly for code that already has a mapping. The source mapping is generated from the human-readable to the obfuscated code, not the other way arround.
+
+If the AI writes something new, there is no clear path back to the neat human version. And even when a path does exist, it is not like pressing an undo button. Someone still has to turn those messy changes back into code that people can actually read and work with.
+
+## The verdict
+
+So, should we train AI on minified code?
+
+Partly, yes. In narrow jobs, the idea makes sense. If the goal is search, or other behind-the-scenes work, compressed code may be a smart way to save money and fit more logic into the same context window.
+
+But it is a bad replacement for normal human programming. People still need readable names, comments, and structure. Without them, the AI may lose the bigger picture, and humans certainly will.
+
+The most likely future is a compromise. People write the readable version. Machines may work on the squished version underneath. Then some magical tools translate between the two.
+
+That is the real promise here. Not replacing human-readable code, but hiding a machine-efficient layer beneath it.
+
+## References
+
+- [Ars Technica: Entire Claude Code CLI source code leaks thanks to exposed map file](https://arstechnica.com/ai/2026/03/entire-claude-code-cli-source-code-leaks-thanks-to-exposed-map-file/)
+- [Layer5: The Claude Code source leak: 512,000 lines, a missing `.npmignore`, and the fastest-growing repo in GitHub history](https://layer5.io/blog/engineering/the-claude-code-source-leak-512000-lines-a-missing-npmignore-and-the-fastest-growing-repo-in-github-history)
+- [MDN: Source map](https://developer.mozilla.org/en-US/docs/Glossary/Source_map)
+- [ICSE 2026: The Hidden Cost of Readability: How Code Formatting Silently Consumes Your LLM Budget](https://conf.researchr.org/details/icse-2026/icse-2026-research-track/39/The-Hidden-Cost-of-Readability-How-Code-Formatting-Silently-Consumes-Your-LLM-Budget)
+- [TU Wien thesis: Reducing token usage of software engineering agents](https://repositum.tuwien.at/handle/20.500.12708/224666)
+- [ICLR 2025: ObscuraCoder: Powering Efficient Code LM Pre-Training Via Obfuscation Grounding](https://iclr.cc/virtual/2025/poster/29407)
+- [OpenReview: When Names Disappear: Revealing What LLMs Actually Understand About Code](https://openreview.net/forum?id=8t5TlFzUAU)
+- [Google Blog: Gemini Embedding 2](https://blog.google/innovation-and-ai/technology/developers-tools/gemini-embedding-2/)
+- [Google AI for Developers: Understand and count tokens](https://ai.google.dev/gemini-api/docs/tokens)
