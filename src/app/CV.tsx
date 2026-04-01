@@ -115,9 +115,9 @@ const education: EducationItem[] = [
       "Investigated emergent patterns in two-species bacterial movement in 3D, using Three.js and SvelteKit.",
     ],
     link: {
-      href: "https://repository.tudelft.nl/islandora/object/uuid%3Ab11dbf3-6aa4-44ae-9ede-f6eb84be1b59",
+      href: "https://repository.tudelft.nl/record/uuid:1965b6df-3ffa-4b06-ab38-eed3d7ee6084",
       label:
-        "repository.tudelft.nl/record/uuid:b11dbf3-6aa4-44ae-9ede-f6eb84be1b59",
+        "repository.tudelft.nl/record/uuid:1965b6df-3ffa-4b06-ab38-eed3d7ee6084",
     },
   },
 ];
