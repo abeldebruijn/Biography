@@ -42,8 +42,7 @@ const experience: ExperienceItem[] = [
 construction project. Inspectors conduct these inspections on foot, recording any sightings of
 endangered species with a form. This form includes many project-specific elements, however some
 are static and consist mainly of legal wording. To create a new form quickly, the previous form is
-cloned and updated with the latest information. This updating process uses AI, instructing the tool to
-update only the necessary parts; without manipulating the static elements.`,
+cloned and updated with the latest information.`,
   },
   {
     title: "PRIME (TU Delft)",
