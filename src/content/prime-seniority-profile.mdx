@@ -1,0 +1,144 @@
+---
+title: 'My Seniority Profile: Four Dimensions from My Time at PRIME'
+date: '2026-05-10'
+description: 'Using the four dimensions from The Pragmatic Engineer to clarify what I actually did at PRIME and where that positions me.'
+isProject: false
+---
+
+This post is a companion to my CV. If you haven't seen it yet, you can find it on the [homepage](/#cv).
+
+It is inspired by a recent article from [The Pragmatic Engineer](https://newsletter.pragmaticengineer.com/p/learnings-from-conducting-1000-interviews) — *Learnings from conducting ~1,000 interviews at Amazon* by Steve Huynh. In that article, Steve introduces four dimensions that companies use during behavioral interviews to calibrate seniority: **Scope**, **Contribution**, **Impact**, and **Difficulty**. Each dimension reveals something different about how you operate, and together they show where you sit on the engineering ladder.
+
+My CV lists what I did at PRIME. This post explains *how* I did it, and what that actually signals about my level.
+
+---
+
+## A quick word on PRIME
+
+PRIME (PRogramme of Innovation and Math Education) at TU Delft is a small but unusual organisation. It had roughly 5–10 student developers. The wider programme has over 50 lecturers and other staff, but I worked directly with around 7 of the non-technical staff — mostly coordinators and a few lecturers who collaborated closely on specific projects. Projects were built on short timelines by rotating student developers who often stayed only a few months before moving on. The work was real and used in production by thousands of students, but the team was small enough that influence did not require a title — it required setting clear examples and building things that others could actually continue.
+
+---
+
+## 1. Scope
+
+> At PRIME, I moved from contributing to individual applets to shaping how multiple projects were planned, reviewed, and maintained. I led the technical direction and planning for Open Linear Algebra and Project Graph, and I also created a PRIME-wide project board that gave coordinators (managers) visibility into progress across around all projects in current development.
+>
+> I pushed for better maintainability across the program: documentation standards were adopted by three projects, preview deployment setup was used by four projects, and the project-board workflow was used by at least five projects. I also pushed to move book tooling away from poorly maintained paid software toward a more open standard that was easier to maintain and publish, even though it required writers to move content from LaTeX to Markdown. Another developer later created conversion tooling to help with that transition.
+>
+> My influence was not based on formal authority. It came from setting examples through my own work, documenting it well, making it easy for junior developers to continue, and getting management support for practices that made PRIME projects more maintainable.
+
+**Where this lands:** Senior, with Staff-like local signals.
+
+This is clearly above early or mid-level. Mid-level scope is usually about owning a complete feature or improving one team's workflow. My scope crossed several projects, affected both developers and non-technical coordinators, and changed PRIME-wide ways of working.
+
+It does not quite reach Staff in a larger-company sense. The organisation was still relatively small, and technical standards were not reused as shared code across projects — projects used different languages, which made that kind of reuse impractical. In a startup or scale-up, this can still read as Staff-like influence. In a larger company, it is safer to call it Senior-level scope.
+
+---
+
+## 2. Contribution
+
+> For Open Linear Algebra, I was the main technical decision-maker. I designed, architected, and implemented the applet system from the start: the state model, rendering approach, component structure, testing setup, documentation approach, deployment flow, and the overall frontend direction.
+>
+> A key technical decision was choosing Svelte over React. I chose Svelte because performance and browser payload mattered: Open Linear Algebra pages could contain multiple interactive applets, and lower JavaScript overhead improved the student experience. At the time, Svelte also integrated more naturally with Three.js and D3 for the kind of graphics-heavy work we were doing. React had stronger UI component libraries, but for this project, rendering performance, graphics integration, and maintainability mattered more.
+>
+> I also identified that undocumented code was a systemic risk at PRIME. Student developers often joined for short periods and left after a few months, which meant undocumented projects could quickly become stale. I introduced documentation templates, pushed for component-level documentation, and helped establish common deployment conventions with other developers. Although most of my time was still implementation-heavy — around 70% — the contribution was not just coding. It included architecture, standards, technical direction, and making the project easier for later developers to maintain.
+
+**Where this lands:** Senior.
+
+This is above mid-level in a clear way. Mid-level contribution typically means owning a full solution within a team and explaining the approach to others. I did that, but also made foundational architectural decisions, introduced documentation standards, influenced testing practices, and created patterns that newer developers were expected to follow.
+
+It does not reach Staff. Around 70% of the contribution was still direct implementation, and the reusable technical architecture was mostly project-specific rather than a platform or framework adopted across many independent teams. The documentation and deployment practices were cross-project, but the core technical system was not shared infrastructure.
+
+---
+
+## 3. Impact
+
+> The main impact was that PRIME projects became easier to inspect, coordinate, and continue after individual student developers left. I helped introduce preview deployments for four projects, so every pull request could produce a working preview. This changed the review process: lecturers and coordinators no longer had to evaluate abstract code changes or wait for a full deployment. They could interact with the applet or feature directly, check whether the assumptions matched the intended learning goal, and give feedback asynchronously.
+>
+> This mattered because applet requirements were often ambiguous. A lecturer might provide a sketch, a desired interaction, and a learning objective, but the practical design choices were often unclear. I would make assumptions, write them down, implement a working version, and use the preview deployment to validate those assumptions with the lecturer. That made the feedback more concrete and reduced the gap between mathematical intent and implementation.
+>
+> The documentation impact was also visible. Project Graph had previously been rewritten because the earlier version lacked documentation. After the new documentation practices, it still had a maintainer after I left. Open Linear Algebra also became easier to onboard new student developers onto and remained actively maintained. At the user level, Open Linear Algebra was used by at least 1,000 students per year, so the maintainability and quality improvements affected real teaching, not only internal developer workflow.
+
+**Where this lands:** Senior; potentially Staff-like locally, but not provably Staff.
+
+This is clearly above mid-level. The impact changed how teams worked — not just how one feature was delivered. The project board affected how managers and coordinators understood project progress. Preview deployments changed how non-technical stakeholders reviewed work. Documentation helped projects remain maintainable after developer turnover.
+
+The gap from Staff is measurability. I do not have hard before/after metrics: no measured reduction in review time, deployment time, onboarding time, stale-project rate, or maintenance effort. The Pragmatic Engineer article explicitly notes that stronger impact stories quantify results and connect technical work to user or business outcomes. The qualitative evidence is strong, but for Staff-level calibration, you want numbers.
+
+---
+
+## 4. Difficulty
+
+> The difficulty was not just building frontend components. The hard part was turning abstract mathematics into interactive, accessible, performant learning tools for large numbers of students. Open Linear Algebra applets had to run inside book pages, sometimes with multiple applets on the same page, so load time and CPU/GPU usage had to be considered continuously. Accessibility standards were high because the tools were used in an educational context.
+>
+> The applets also had complex state. They supported multiple languages, interactive and stale modes, formulas shown or hidden, local controls such as sliders and dropdowns, matrix inputs, and direct scene interactions such as panning, zooming, and manipulating vectors. The challenge was to keep this understandable for students while preserving mathematical correctness.
+>
+> One of the key trade-offs I made was limiting how many formulas and interactive elements could be visible at once. More interactivity was not always better. If an applet tried to explain too much at once, the learning goal became unclear. I pushed for splitting complex explanations into multiple applets instead of overloading one applet. That was a product and technical decision: it improved clarity for students, reduced state complexity, and made the applets easier to test and maintain. We validated correctness with unit testing and visual testing.
+
+**Where this lands:** Senior.
+
+The path was not predefined. Management gave a broad goal — make mathematical content easier to explain through interactive applets — and I had to translate that into architecture, interaction design, testing, performance constraints, and maintainable implementation.
+
+The difficulty involved multiple competing concerns at once: mathematical precision versus visual intuition, interactivity versus clarity, performance versus richness, accessibility versus custom graphics, and maintainability despite developer turnover. That is above mid-level.
+
+It does not clearly reach Staff-level difficulty. The complexity was primarily within a product and project family rather than across several teams with conflicting technical requirements. Staff-level difficulty would be clearer if I had to align multiple teams with incompatible needs, create a cross-team architecture that worked across different languages as a shared platform, or resolve organizational disagreements about technical direction.
+
+---
+
+## Overall positioning
+
+Across all four dimensions, the picture is consistent:
+
+> **Senior-leaning engineer with strong ownership, technical direction, and cross-project process impact in a small organisation.**
+
+For small startups and medium scale-ups, this is how I would frame what I can offer:
+
+<table>
+  <thead>
+    <tr>
+      <th>Signal</th>
+      <th>Evidence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Own ambiguous product and technical problems</td>
+      <td>Open LA started from a broad goal, not a detailed spec</td>
+    </tr>
+    <tr>
+      <td>Work directly with non-technical stakeholders</td>
+      <td>Lecturers reviewed assumptions through working previews</td>
+    </tr>
+    <tr>
+      <td>Make architectural decisions</td>
+      <td>Svelte choice, applet architecture, testing setup</td>
+    </tr>
+    <tr>
+      <td>Improve engineering process</td>
+      <td>Project board, preview deployments, documentation templates</td>
+    </tr>
+    <tr>
+      <td>Leave systems maintainable</td>
+      <td>Project Graph and Open LA remained maintainable after handoff</td>
+    </tr>
+    <tr>
+      <td>Balance quality and pragmatism</td>
+      <td>Limited interactivity and formulas to protect learning clarity and reduce complexity</td>
+    </tr>
+  </tbody>
+</table>
+
+
+---
+
+## The condensed version
+
+If you were to ask me about my time at PRIME in an interview, this is how I would summarise it:
+
+> At PRIME, I was initially building interactive applets for Open Linear Algebra, but the role grew into technical leadership across several projects. I designed and implemented the Open LA applet architecture from scratch, including the state model, rendering approach, testing setup, documentation, and deployment flow.
+>
+> PRIME relied heavily on short-term student developers, so undocumented projects often became stale after someone left. I pushed for component-level documentation, tutorials, preview deployments, and a project-board workflow that gave managers and coordinators visibility across projects. These practices were adopted across multiple projects: documentation in three, preview deployments in four, and the project-board workflow in five.
+>
+> The technical difficulty was turning abstract mathematics into accessible, performant, interactive applets used by at least 1,000 students per year. The applets had multiple modes, languages, formulas, local controls, and direct scene interactions. A key design decision was to limit how much interactivity and formula content appeared at once, splitting complex explanations into multiple applets when needed. That kept the learning goal clear and reduced complexity.
+>
+> The result was that PRIME's development workflow became more maintainable and easier to coordinate. Lecturers could review working previews asynchronously, managers could track project progress, and projects like Open Linear Algebra and Project Graph remained maintainable after handoff.
